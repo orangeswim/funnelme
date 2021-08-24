@@ -1,4 +1,4 @@
-import { Filter, FilterOperator, Funnel } from '../src';
+import { Filter, FilterOperator, Funnel, ProcessFilter } from '../src';
 
 interface Fruit {
   name: string;
@@ -7,7 +7,7 @@ interface Fruit {
 describe('Funnel', () => {
   it('Bad Filter', () => {
     var filter: Filter<Fruit> = {
-      operator: -1,
+      operator: (-1 as unknown) as FilterOperator,
       nodes: [],
     };
 
@@ -146,5 +146,75 @@ describe('Funnel', () => {
     expect(results).toEqual(
       expect.arrayContaining([{ name: 'Apple' }, { name: 'Nut' }])
     );
+  });
+
+  it('NOT Filter bad', () => {
+    var filter: Filter<Fruit> = {
+      operator: FilterOperator.NOT,
+      nodes: [],
+    };
+
+    var results = () => {
+      Funnel(filter);
+    };
+
+    expect(results).toThrow('NOT FilterNode has 0 nodes');
+  });
+
+  it('nested NOT AND Filter multiple', () => {
+    var filterB: Filter<Fruit> = {
+      operator: FilterOperator.AND,
+      nodes: [{ condition: val => val.name.includes('a') }],
+    };
+
+    var filter: Filter<Fruit> = {
+      operator: FilterOperator.NOT,
+      nodes: [{ condition: ProcessFilter(filterB) }],
+    };
+
+    var data: Fruit[] = [
+      { name: 'Apple' },
+      { name: 'Banana' },
+      { name: 'Nut' },
+      { name: 'Orange' },
+      { name: 'Strawberry' },
+    ];
+
+    var fun = Funnel(filter);
+    var results = data.filter(fun);
+
+    expect(results).toHaveLength(2);
+    expect(results).toEqual(
+      expect.arrayContaining([{ name: 'Apple' }, { name: 'Nut' }])
+    );
+  });
+
+  it('nested NOT OR Filter multiple', () => {
+    var filterB: Filter<Fruit> = {
+      operator: FilterOperator.OR,
+      nodes: [
+        { condition: val => val.name.includes('a') },
+        { condition: val => val.name.includes('t') },
+      ],
+    };
+
+    var filter: Filter<Fruit> = {
+      operator: FilterOperator.NOT,
+      nodes: [{ condition: ProcessFilter(filterB) }],
+    };
+
+    var data: Fruit[] = [
+      { name: 'Apple' },
+      { name: 'Banana' },
+      { name: 'Nut' },
+      { name: 'Orange' },
+      { name: 'Strawberry' },
+    ];
+
+    var fun = Funnel(filter);
+    var results = data.filter(fun);
+
+    expect(results).toHaveLength(1);
+    expect(results).toEqual(expect.arrayContaining([{ name: 'Apple' }]));
   });
 });

@@ -1,7 +1,7 @@
 export enum FilterOperator {
-  AND,
-  OR,
-  NOT,
+  AND = 'AND',
+  OR = 'OR',
+  NOT = 'NOT',
 }
 
 export type FilterCallback<Type> = (
@@ -18,7 +18,9 @@ export interface Filter<Type> {
   nodes: FilterNode<Type>[];
 }
 
-export const ProcessFilter = <Type>(filter: Filter<Type>) => {
+export const ProcessFilter: <Type>(
+  filter: Filter<Type>
+) => FilterCallback<Type> = <Type>(filter: Filter<Type>) => {
   switch (filter.operator) {
     case FilterOperator.AND:
       return (value: Type, index: number, arr: Type[]) => {
@@ -43,10 +45,10 @@ export const ProcessFilter = <Type>(filter: Filter<Type>) => {
         return false;
       };
     case FilterOperator.NOT:
+      if (filter.nodes.length === 0) {
+        throw new Error('NOT FilterNode has 0 nodes');
+      }
       return (value: Type, index: number, arr: Type[]) => {
-        if (filter.nodes.length === 0) {
-          throw new Error('NOT FilterNode has 0 nodes');
-        }
         var res = filter.nodes[0].condition(value, index, arr);
         return !res;
       };
