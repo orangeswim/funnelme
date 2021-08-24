@@ -153,6 +153,26 @@ describe('FilterTests', () => {
     );
   });
 
+  it('simple JSON SW', () => {
+    var filter: Filter<Fruit> = JsonToFunnel(
+      `{ "op":"AND","nodes":[{"op":"SW","val":"Ap","key":"name"}]}`
+    );
+    var fun = Funnel(filter);
+    var data: Fruit[] = [
+      { name: 'Apple', price: 1 },
+      { name: 'Banana', price: 2 },
+      { name: 'Nut', price: 3 },
+      { name: 'Orange', price: 2 },
+      { name: 'Strawberry', price: 0 },
+    ];
+    var result = data.filter(fun);
+
+    expect(result).toHaveLength(1);
+    expect(result).toEqual(
+      expect.arrayContaining([{ name: 'Apple', price: 1 }])
+    );
+  });
+
   it('multiple and', () => {
     var filter: Filter<Fruit> = JsonToFunnel({
       op: FilterOperator.AND,
