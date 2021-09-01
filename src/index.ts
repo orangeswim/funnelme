@@ -1,3 +1,6 @@
+import { FilterJsonRuleOp, FilterJsonRule } from './JsonFilter';
+
+export { FilterJsonRuleOp, FilterJsonRule };
 export enum FilterOperator {
   AND = 'AND',
   OR = 'OR',
