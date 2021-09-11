@@ -6,10 +6,12 @@ export interface FilterJsonRule {
   op: FilterJsonRuleOp;
   key: string;
   val: string | number;
+  type?: 'node' | 'rule';
 }
 export interface FilterJsonNode {
   op: FilterOperator;
   nodes: (FilterJsonNode | FilterJsonRule)[];
+  type?: 'node' | 'rule';
 }
 
 export interface FilterObject {
@@ -25,8 +27,10 @@ export const JsonToFilter = <Type>(parsedInput: FilterJsonNode) => {
     var node = parsedInput.nodes[i];
     if ((node as FilterJsonRule).val != undefined) {
       //Treat as Rule
+      node.type = 'rule';
       FilterJsonRuleToFilter<Type>(node as FilterJsonRule, filter);
     } else {
+      node.type = 'node';
       FilterJsonNodeToFilter<Type>(node as FilterJsonNode, filter);
     }
   }
