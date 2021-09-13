@@ -48,58 +48,53 @@ export const FilterJsonRuleToFilter = <Type>(
   node: FilterJsonRule,
   filter: Filter<Type>
 ) => {
-  try {
-    switch (node.op) {
-      case 'GT':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key] > node.val;
-          },
-        });
-        break;
-      case 'LT':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key] < node.val;
-          },
-        });
-        break;
-      case 'EQ':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key] === node.val;
-          },
-        });
-        break;
-      case 'HAS':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key]
-              .toString()
-              .includes(node.val.toString());
-          },
-        });
-        break;
-      case 'NOT':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key] != node.val;
-          },
-        });
-        break;
-      case 'SW':
-        filter.nodes.push({
-          condition: val => {
-            return ((val as unknown) as FilterObject)[node.key]
-              .toString()
-              .startsWith(node.val.toString());
-          },
-        });
-        break;
-    }
-  } catch (error) {
-    console.log('val', val, 'node', node, 'key', node.key, 'val', node.val);
-    throw error;
+  switch (node.op) {
+    case 'GT':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key] > node.val;
+        },
+      });
+      break;
+    case 'LT':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key] < node.val;
+        },
+      });
+      break;
+    case 'EQ':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key] === node.val;
+        },
+      });
+      break;
+    case 'HAS':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key]
+            ?.toString()
+            .includes(node.val.toString());
+        },
+      });
+      break;
+    case 'NOT':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key] != node.val;
+        },
+      });
+      break;
+    case 'SW':
+      filter.nodes.push({
+        condition: val => {
+          return ((val as unknown) as FilterObject)[node.key]
+            ?.toString()
+            .startsWith(node.val.toString());
+        },
+      });
+      break;
   }
 };
 
