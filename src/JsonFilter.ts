@@ -8,7 +8,7 @@ export type FilterJsonRuleOp =
   | 'EQ'
   | 'NOT'
   | 'SW'
-  | 'HASNOT';
+  | 'EXCLUDES';
 export interface FilterJsonRule {
   op: FilterJsonRuleOp;
   key: string;
@@ -86,7 +86,7 @@ export const FilterJsonRuleToFilter = <Type>(
         },
       });
       break;
-    case 'HASNOT':
+    case 'EXCLUDES':
       filter.nodes.push({
         condition: val => {
           return !((val as unknown) as FilterObject)[node.key]
