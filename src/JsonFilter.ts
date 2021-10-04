@@ -1,7 +1,14 @@
 import { Filter, FilterOperator, ProcessFilter } from '.';
 
 //export type FilterJsonOp = 'AND' | 'OR' | 'NOT';
-export type FilterJsonRuleOp = 'GT' | 'LT' | 'HAS' | 'EQ' | 'NOT' | 'SW';
+export type FilterJsonRuleOp =
+  | 'GT'
+  | 'LT'
+  | 'HAS'
+  | 'EQ'
+  | 'NOT'
+  | 'SW'
+  | 'HASNOT';
 export interface FilterJsonRule {
   op: FilterJsonRuleOp;
   key: string;
@@ -74,6 +81,15 @@ export const FilterJsonRuleToFilter = <Type>(
       filter.nodes.push({
         condition: val => {
           return ((val as unknown) as FilterObject)[node.key]
+            ?.toString()
+            .includes(node.val.toString());
+        },
+      });
+      break;
+    case 'HASNOT':
+      filter.nodes.push({
+        condition: val => {
+          return !((val as unknown) as FilterObject)[node.key]
             ?.toString()
             .includes(node.val.toString());
         },
